@@ -1,1 +1,0 @@
-# payment-standard-tool
