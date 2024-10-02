@@ -104,9 +104,9 @@
     const $searchProgram = $('#search_program');
     const $results = $("#results");
     const $submit = $('#search_submit');
-    const json_suffix = "20240924145250";
+    const json_suffix = "20241002214626";
   
-    let today = new Date().toISOString();
+    let parsedToday = new Date().setUTCHours(0, 0, 0, 0);
     let paymentStandard = {};
     let activePaymentStandard = undefined;
     let zipCodesByTown = {};
@@ -170,7 +170,7 @@
       let dateToKey = undefined;
       Object.keys(paymentStandard).forEach((dateFrom)=>{
         dateTo = Object.keys(paymentStandard[dateFrom])[0];
-        if(dateFrom <= today && today <= dateTo) {
+        if(Date.parse(dateFrom) <= parsedToday && parsedToday <= Date.parse(dateTo)) {
           dateFromKey = dateFrom;
           dateToKey = dateTo;
         }
