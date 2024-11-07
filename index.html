@@ -115,7 +115,7 @@
     const $searchProgram = $('#search_program');
     const $results = $("#results");
     const $submit = $('#search_submit');
-    const json_suffix = "20241106101002";
+    const json_suffix = "20241107101003";
   
     let parsedToday = new Date().setUTCHours(0, 0, 0, 0);
     let paymentStandard = {};
@@ -271,9 +271,23 @@
       }
     });
   
+    function eventKeyIs(e, keyText, keyInt) {
+      return [
+        () => eventKeyIs(e.originalEvent, keyText, keyInt),
+        () => e.key.toLocaleLowerCase() === keyText,
+        () => e.keyCode === keyInt,
+        () => e.which === keyInt,
+        () => e.code.toLocaleLowerCase() === keyText,
+      ].some(checkFn => {
+        try {
+          if (checkFn()) return true;
+        } catch(_) {};
+      })
+    }
+  
     [$searchProgram, $searchSize].forEach(($element) => {
       $(document).on("keydown", $searchProgram, function (e) {
-        if(e.key.toLocaleLowerCase() == 'enter') {
+        if(eventKeyIs(e, 'enter', 13)) {
           $form.trigger('submit');
         }
       });
