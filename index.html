@@ -97,12 +97,15 @@
 <div class='flex-column' id='results'></div>
 </div>
 <script>
-  function logNaNToSentry(info) {
+  function sentryError(message, info) {
     try {
-      Sentry.captureMessage('Received NaN payment standard', { extra: info, level: Sentry.Severity.Error })
+      Sentry.captureMessage(message, { extra: info, level: Sentry.Severity.Error });
     } catch(err) {
-      console.error(err)
+      console.error(err);
     }
+  }
+  function logNaNToSentry(info) {
+    sentryError('Received NaN payment standard', info);
   }
   
   $(function() {
@@ -112,7 +115,7 @@
     const $searchProgram = $('#search_program');
     const $results = $("#results");
     const $submit = $('#search_submit');
-    const json_suffix = "20250131185824";
+    const json_suffix = "20250307160456";
   
     let parsedToday = new Date().setUTCHours(0, 0, 0, 0);
     let paymentStandard = {};
@@ -143,7 +146,7 @@
     }
   
     function addRow($table, program, town, zipCode, size) {
-        ps = activePaymentStandard[zipCode][town][program];
+        let ps = activePaymentStandard[zipCode][town];
         communities = ps['communities'];
         let value = new Intl.NumberFormat('en-US').format(ps[size]);
         if (value === 'NaN') logNaNToSentry({ program: program, town: town, zipCode: zipCode, size: size, communities: communities, paymentStandard: ps })
@@ -174,18 +177,22 @@
         addTable(program, town, zipCodes, size);
     }
   
-    function setActivePaymentStandard() {
+    function setActivePaymentStandard(program) {
       let dateFromKey = undefined;
       let dateToKey = undefined;
-      Object.keys(paymentStandard).forEach((dateFrom)=>{
-        dateTo = Object.keys(paymentStandard[dateFrom])[0];
+      ps = paymentStandard[program];
+      Object.keys(ps).forEach((dateFrom)=>{
+        dateTo = Object.keys(ps[dateFrom])[0];
         if(Date.parse(dateFrom) <= parsedToday && parsedToday <= Date.parse(dateTo)) {
           dateFromKey = dateFrom;
           dateToKey = dateTo;
         }
       });
       if (dateFromKey && dateToKey) {
-        activePaymentStandard = paymentStandard[dateFromKey][dateToKey];
+        activePaymentStandard = ps[dateFromKey][dateToKey];
+      } else {
+        activePaymentStandard = undefined;
+        sentryError(`undefined payment standard for program: '${program}'`);
       }
     }
   
@@ -196,14 +203,14 @@
       let program = $searchProgram.val();
       let town = undefined;
       let community = undefined;
-      // Set the payment standard that applies for the current date
-      setActivePaymentStandard();
       // Clear previous results
       $results.empty();
       // Validate input
       if(!size || !location || !program) {
         return;
       }
+      // Set the payment standard that applies for the current date
+      setActivePaymentStandard(program);
       // Get list of zip codes based on location input
       zipCodeRegExp = new RegExp('^[0-9]{5}$');
       if (zipCodeRegExp.test(location)) {
@@ -247,6 +254,7 @@
   
       if(missingData) {
         $results.append('<p>Error loading data.</p>');
+        sentryError('Error loading data');
       } else {
         $submit.prop('disabled', false);
       }
@@ -264,6 +272,7 @@
         } catch (error) {
           $results.empty();
           $results.append('<p>Unexpected error.</p>');
+          sentryError('Unexpected error', error);
           console.error(error);
         }
       }
