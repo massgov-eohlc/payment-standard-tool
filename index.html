@@ -31,7 +31,7 @@
     font-weight: bold;
     margin: 0;
   }
-  form .form-row {
+  form .d-flex.flex-row {
     max-width: 100%;
   }
   body {
@@ -69,23 +69,23 @@
 <div class='container-fluid flex-grow-1'>
 <div class='row flex-nowrap'>
 <main class='mt-3 mx-4 flex-grow-1 overflow-auto' id='j-main' tabindex='-1'>
-<form id="search_form" novalidate="novalidate" class="simple_form search" action="#" accept-charset="UTF-8" method="get"><div class='form-row'>
-<div class='col-sm-3'>
+<form id="search_form" novalidate="novalidate" class="simple_form search" action="#" accept-charset="UTF-8" method="get"><div class='d-grid d-flex flex-row flex-wrap'>
+<div class='col-md-3 col-sm-12 col-12 px-1'>
 <div class='form-group'>
-<div class="form-group select optional search_program"><label class="select optional" for="search_program">Program</label><select class="form-control select optional" name="search[program]" id="search_program"><option value="" label=" "></option>
+<div class="mb-3 select optional search_program"><label class="form-label select optional" for="search_program">Program</label><select class="form-select select optional form-control" name="search[program]" id="search_program"><option value="" label=" "></option>
 <option value="section_8">Section 8</option>
 <option value="mrvp">MRVP</option>
 <option value="ahvp">AHVP</option></select></div>
 </div>
 </div>
-<div class='col-sm-3'>
+<div class='col-md-3 col-sm-12 col-12 px-1'>
 <div class='form-group'>
-<div class="form-group string optional search_location"><label class="string optional" for="search_location">Zip Code / Town</label><input class="form-control string optional" type="text" name="search[location]" id="search_location" /></div>
+<div class="mb-3 string optional search_location"><label class="form-label string optional" for="search_location">Zip Code / Town</label><input class="form-control string optional" type="text" name="search[location]" id="search_location" /></div>
 </div>
 </div>
-<div class='col-sm-3'>
+<div class='col-md-3 col-sm-12 col-12 px-1'>
 <div class='form-group'>
-<div class="form-group select optional search_size"><label class="select optional" for="search_size">Bedrooms</label><select class="form-control select optional" name="search[size]" id="search_size"><option value="" label=" "></option>
+<div class="mb-3 select optional search_size"><label class="form-label select optional" for="search_size">Bedrooms</label><select class="form-select select optional form-control" name="search[size]" id="search_size"><option value="" label=" "></option>
 <option value="sro">Single Room Occupancy</option>
 <option value="efficiency">Studio</option>
 <option value="one_bedroom">1 Bedroom</option>
@@ -98,9 +98,9 @@
 <option value="eight_bedroom">8 Bedroom</option></select></div>
 </div>
 </div>
+<div class='col-md-3 col-sm-12 col-12 px-0'>
 <div class='form-group'>
-<div class='mt-4'>
-<input type="submit" name="commit" value="Submit" class="btn btn-lg btn-primary btn-block" id="search_submit" disabled="disabled" data-disable-with="Submit" />
+<input type="submit" name="commit" value="Submit" class="btn btn-lg btn-primary btn-lg mt-4" id="search_submit" disabled="disabled" data-disable-with="Submit" />
 </div>
 </div>
 </div>
@@ -136,7 +136,7 @@
     let townByCommunity = {};
     let townsByZipCode = {};
   
-    $results.append('<p>Loading...</p>');
+    $results.append('<p class=pl-2>Loading...</p>');
   
     function loadData() {
       $.getJSON(`payment_standard_data${json_suffix}.json`, function(data) {
