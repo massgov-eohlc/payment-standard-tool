@@ -279,7 +279,7 @@ New payment standards come into effect
           if (isWithinSixtyDays(dateFromKey)) {
             upcomingPaymentStandard = ps[dateFromKey][dateToKey];
             upcomingPaymentStandardDate = new Intl.DateTimeFormat('en-US', {
-              month: 'short', day: 'numeric', year: 'numeric'
+              month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC',
             }).format(new Date(dateFromKey));
             $upcomingPsAlertDate.text(upcomingPaymentStandardDate);
             $upcomingPsAlert.show();
