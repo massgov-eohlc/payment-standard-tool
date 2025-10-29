@@ -128,7 +128,11 @@ New payment standards come into effect
 <script>
   function sentryError(message, info) {
     try {
-      Sentry.captureMessage(message, { extra: info, level: Sentry.Severity.Error });
+      if (typeof Sentry !== 'undefined') {
+        Sentry.captureMessage(message, { extra: info, level: Sentry.Severity.Error });
+      } else {
+        console.log(message, info);
+      }
     } catch(err) {
       console.error(err);
     }
