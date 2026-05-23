@@ -122,6 +122,22 @@ New payment standards come into effect
 </div>
 </div>
 </div>
+<div class="mt-4 col-md-11 col-sm-12 col-12 px-1 alert background-info" id="expired-ps-alert" role="alert" style="display: none">
+<div class="px-3">
+<b>
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-info-circle" viewbox="0 0 16 16">
+  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+  <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+</svg>
+Payment Standards Expired
+</b>
+<div class="mt-2 mb-0">
+Note: Payment standards expired on
+<span id="expired-ps-alert-date"></span>
+; until updated standards are applied, this tool will use the most recently available payment standards.
+</div>
+</div>
+</div>
 <div class="d-flex">
 <div class="mx-1 mt-2 flex-column" id="results"></div>
 </div>
@@ -152,6 +168,8 @@ New payment standards come into effect
     const $submit = $('#search_submit');
     const $upcomingPsAlert = $("#upcoming-ps-alert");
     const $upcomingPsAlertDate = $("#upcoming-ps-alert-date");
+    const $expiredPsAlert = $("#expired-ps-alert");
+    const $expiredPsAlertDate = $("#expired-ps-alert-date");
     const json_suffix = "";
   
     let parsedToday = new Date().setUTCHours(0, 0, 0, 0);
@@ -290,8 +308,19 @@ New payment standards come into effect
           }
         }
       } else {
-        activePaymentStandard = undefined;
-        sentryError(`undefined payment standard for program: '${program}'`);
+        let expiredPsDateRanges = psDateRanges.filter(([_dateFrom, dateTo]) => Date.parse(dateTo) < parsedToday);
+        if (expiredPsDateRanges.length) {
+          let [dateFromKey, dateToKey] = expiredPsDateRanges[expiredPsDateRanges.length - 1];
+          activePaymentStandard = ps[dateFromKey][dateToKey];
+          let expiredPaymentStandardDate = new Intl.DateTimeFormat('en-US', {
+            month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC',
+          }).format(new Date(dateToKey));
+          $expiredPsAlertDate.text(expiredPaymentStandardDate);
+          $expiredPsAlert.show();
+        } else {
+          activePaymentStandard = undefined;
+          sentryError(`undefined payment standard for program: '${program}'`);
+        }
       }
     }
   
@@ -333,6 +362,10 @@ New payment standards come into effect
       let community = undefined;
       // Clear previous results
       $upcomingPsAlert.hide();
+      $expiredPsAlert.hide();
+      activePaymentStandard = undefined;
+      upcomingPaymentStandard = undefined;
+      upcomingPaymentStandardDate = undefined;
       $results.empty();
       // Validate input
       if(!size || !location || !program) {
